@@ -16,6 +16,12 @@ import { FormsModule } from '@angular/forms';
     <option disabled value="">--Select a quantity--</option>
     <option *ngFor="let q of qtyAvailable()">{{ q }}</option>
   </select>
+  <div>Vehicle: {{ selectedVehicle().name}}</div>
+  <div>Price: {{ selectedVehicle().price | number: '1.2-2'}}</div>
+  <div style="font-weight: bold" [style.color]="color()">Total: {{ exPrice()  | number: '1.2-2' }}</div>
+  <div *ngFor="let v of vehicles()">
+    {{ v.name }}
+  </div>
   `,
 })
 export class App {
@@ -31,8 +37,16 @@ export class App {
 
   constructor() {
     console.log(this.quantity());
-        // Two for one sale
-        this.quantity.update((qty) => qty * 5);
+    // Two for one sale
+    this.quantity.update((qty) => qty * 5);
+
+    this.selectedVehicle.mutate((v) => v.price = v.price + (v.price * 0.2));
+
+    // Add selected vehicle to array
+    this.vehicles.mutate(v => v.push(this.selectedVehicle()))
+
+    // Example of an effect
+    effect(() => console.log(JSON.stringify(this.vehicles())));
   }
   // Example of a declarative effect
   qtyEff = effect(() => console.log("Latest quantity:", this.quantity()));
